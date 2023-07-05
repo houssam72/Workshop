@@ -1,74 +1,74 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import "../../App.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import AuthService from "../../service/auth-service";
 
-class SignUp extends Component {
-  constructor(props) {
-    super(props);
-  }
+function SignUp({ callback: toRegistration }) {
+  const navigate = useNavigate();
+  const { register, handleSubmit } = useForm();
 
-  render() {
-    return (
-      <div className="sign_in">
-        <article
-          className="br3 ba  b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center"
-          style={{ marginTop: "80px" }}
-        >
-          <div className="pa4 black-80">
-            <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
-              <legend className=" tc f1 fw6 ph0 mh0 white">Sign In</legend>
-              <div className="mt3">
-                <label
-                  className="db fw6 lh-copy f6 white"
-                  htmlFor="email-address"
-                >
+  const onSubmit = (data) => {
+    AuthService.login(data.email, data.password)
+      .then((res) => {
+        localStorage.setItem("access_token", res.data.token);
+        navigate("/profile");
+      })
+      .catch((err) => console.log(err.message));
+  };
+
+  return (
+    <div className="sign_in">
+      <article
+        className="br3   bg-white b--black-10 mv4  min-w-400 mw6 shadow-5 center"
+        style={{ marginTop: "80px" }}
+      >
+        <div className="pa4 black-80">
+          <fieldset
+            id="sign_up"
+            className=" ph0 mh0 "
+          >
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-center">
+              <legend className=" tc f1 fw6 ph0 mh0">
+                Bienvenue sur SMILE 🙂 !
+              </legend>
+              <div className="mt3 w-full">
+                <label className="db fw6 lh-copy f6 " htmlFor="email">
                   Email
                 </label>
                 <input
-                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 b--white"
-                  type="email"
-                  name="email-address"
-                  id="email-address"
+                  className="pa2 input-reset border-2 bg-transparent   w-100 "
+                  id="email"
+                  {...register("email")}
                 />
               </div>
-              <div className="mv3">
-                <label className="db fw6 lh-copy f6 white" htmlFor="password">
+              <div className="mv3 w-full">
+                <label className="db fw6 lh-copy f6" htmlFor="password">
                   Password
                 </label>
                 <input
-                  className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100 b--white"
+                  className="b pa2 input-reset border-2 bg-transparent  w-100 "
                   type="password"
-                  name="password"
                   id="password"
+                  {...register("password")}
                 />
               </div>
-            </fieldset>
-            <div className=" " style={{ marginLeft: "35%" }}>
-              {/* <Link to='/Acceuil'> */}
               <input
-                className="white sat b ph3 pv2 input-reset ba b--white bg-transparent grow pointer f6 dib"
+                className=" sat b ph3 pv2 input-reset ba  bg-blue-300 grow pointer f6 dib"
                 type="submit"
                 value="Sign in"
-                onClick={()=>{this.props.test(3)}}
               />
-              {/* </Link> */}
-            </div>
-            {/* <Link to='register'> */}
-            <div className="lh-copy mt3">
-              <p
-                className="tc f6 link dim white db pointer"
-                path="/services"
-                onClick={()=>{this.props.test(2)}}
-              >
-                Register
-              </p>
-            </div>
-            {/* </LiZnk> */}
-          </div>
-        </article>
-      </div>
-    );
-  }
+            </form>
+            <p onClick={toRegistration} className="underline mt-2 hover:cursor-pointer">
+              Pas enregistré ? <span className="font-bold ">cliquez ici</span>{" "}
+              pour vous inscrire !{" "}
+            </p>
+          </fieldset>
+          {/* </LiZnk> */}
+        </div>
+      </article>
+    </div>
+  );
 }
 
 export default SignUp;

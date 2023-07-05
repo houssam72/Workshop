@@ -1,71 +1,98 @@
-import React, { Component } from "react";
-// import { Link } from 'react-router-dom';
+import AuthService from "../../service/auth-service";
+import { useForm } from "react-hook-form";
 
-class Register extends Component {
-  
-  render() {
+function Register({ callback: toSignUp }) { 
+  const { register, handleSubmit } = useForm(); 
+
+  const handleRegistration = (data) => {
+    AuthService.register(data)
+    .then(() => (  
+        toSignUp()
+      ))
+    .catch((err) => console.log(err.message));
+  }; 
     return (
-      <div className="register" style={{ marginTop: "-8%" }}>
-        <div className="tc  white center br3 ba  b--black-10 mv4 w-100 w-50-m w-100-l mw6 shadow-5 center sec_htmlForm">
-          <legend className="tc f1 fw6 ph0 mh0 white center">Register</legend>
-          <br />
-          <label htmlFor="marque_voiture" >Nom : </label>
-          <input
-            className="pa1 input-reset ba bg-transparent hover-bg-black hover-white w-40 b--white mb2"
-            style={{marginleft:"20px"}}
-            type="text"
-            id="nom"
-            name="nom"
-          />
-          <br></br>
-          <label htmlFor="marque_voiture" style={{marginLeft:'-23px'}}>Prenom : </label>
-          <input
-            className="pa1 input-reset ba bg-transparent hover-bg-black hover-white w-40 b--white mb2"
-            type="text"
-            id="prenom"
-            name="prenom"
-          />
-          <br></br>
+<div className="sign_in">
+      <article
+        className="br3   bg-white b--black-10 mv4  min-w-400 mw6 shadow-5 center"
+        style={{ marginTop: "80px" }}
+      >
+        <div className="pa4 black-80">
+          <fieldset
+            id="sign_up"
+            className=" ph0 mh0 "
+          >
+            <form onSubmit={handleSubmit(handleRegistration)} className="flex flex-col items-center">
+              <legend className=" tc f2 ph0 mh0">
+                Encore un pas avant d'accéder à la plateforme !
+              </legend>
+              <div className="mt3 w-full">
+                <label htmlFor="firstName" className="db fw6 lh-copy f6 ">
+                  First Name
+                </label>
+                <input
+                  className="pa2 input-reset border-2 bg-transparent   w-100 "
+                  id="firstName"
+                  {...register("firstname")}
+                />
+              </div>
 
-          <label htmlFor="marque_voiture" style={{marginLeft:'-7px'}}>Email : </label>
-          <input
-            className="pa1 input-reset ba bg-transparent hover-bg-black hover-white w-40 b--white mb2"
-            type="text"
-            id="email"
-            name="email"
-          />
-          <br></br>
-
-          <label htmlFor="date" style={{marginLeft:'-100px'}}>Date de naissance : </label>
-          <input
-            className="pa1 input-reset ba bg-transparent hover-bg-black hover-white w-40 b--white mb2"
-            type="date"
-            id="date"
-            name="date"
-          />
-          <br></br>
-          <label htmlFor="marque_voiture" style={{marginLeft:'-38px'}}>Password : </label>
-          <input
-            className="pa1 input-reset ba bg-transparent hover-bg-black hover-white w-40 b--white mb2"
-            type="password"
-            id="password"
-            name="password"
-          />
-          
-          {/* <Link to='sign-up'> */}
-          <div className="">
-            <input
-              className="mv2 sat b ph3 pv2 input-reset ba b--white bg-transparent grow pointer f6 dib white"
-              style={{ margin: "20px 0 20px 0" }}
-              type="submit"
-              onClick={()=>{this.props.test(1)}}
-              value="Register"
-            />
-          </div>
-          {/* </Link> */}
+              <div className="mt3 w-full">
+                <label htmlFor="lastName" className="db fw6 lh-copy f6 ">
+                  Last Name
+                </label>
+                <input
+                  className="pa2 input-reset border-2 bg-transparent   w-100 "
+                  id="lastName"
+                  {...register("lastname")}
+                />
+              </div>
+              <div className="mt3 w-full">
+                <label className="db fw6 lh-copy f6 " htmlFor="email">
+                  Email
+                </label>
+                <input
+                  className="pa2 input-reset border-2 bg-transparent   w-100 "
+                  id="email"
+                  {...register("email")}
+                />
+              </div>
+              <div className="mt3 w-full">
+                <label className="db fw6 lh-copy f6" htmlFor="password">
+                  Password
+                </label>
+                <input
+                  className="b pa2 input-reset border-2 bg-transparent  w-100 "
+                  type="password"
+                  id="password"
+                  {...register("password")}
+                />
+              </div>
+              <div className="mv3 w-full">
+                <label className="db fw6 lh-copy f6" htmlFor="dob">
+                  Date de naissance
+                </label>
+                <input
+                  className="b pa2 input-reset border-2 bg-transparent  w-100 "
+                  type="date"
+                  id="dob"
+                  {...register("password")}
+                />
+              </div>
+              <input
+                className=" sat b ph3 mv3 pv2 input-reset ba  bg-blue-300 grow pointer f6 dib"
+                type="submit"
+                value="Valider"
+              /> 
+            </form>
+            <p onClick={toSignUp} className="underline mt-2 hover:cursor-pointer">
+              Déjà inscrit ? <span className="font-bold ">connectez-vous ici !</span>
+            </p>
+          </fieldset>
+          {/* </LiZnk> */}
         </div>
-      </div>
-    );
-  }
+      </article>
+    </div>
+      ); 
 }
 export default Register;

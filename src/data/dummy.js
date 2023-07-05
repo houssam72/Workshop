@@ -471,27 +471,30 @@ export const employeesGrid = [
 
 export const links = [
   {
-    title: 'Dashboard',
+    title: '',
     links: [
       {
-        name: 'Accueil',
+        name: 'Accueil', 
+        path:'profile',
         icon: <AiFillBank />,
       },
     ],
   },
-
+  
   {
     title: 'Pages',
     links: [
       {
         name: 'Sondage',
+        path:'sondage',
         icon: <AiOutlineStock />,
       },
       {
-        name: 'Formation',
+        name: 'Formations',
+        path:'formations',
         icon: <IoMdContacts />,
       },
-     
+      
     ],
   },
   {
@@ -499,20 +502,23 @@ export const links = [
     links: [
       {
         name: 'Calendrier',
+        path:'calendar',
         icon: <AiOutlineCalendar />,
       },
       {
-        name: 'Tableau_Agile',
+        name: 'Tableau Agile',
+        path:'agile',
         icon: <BsKanban />,
       },
     ],
   },
   {
-    title: 'Charts',
+    title: 'Statistiques',
     links: [
       
       {
-        name: 'Graphique',
+        name: 'Dashboard',
+        path:'dashboard',
         icon: <BsBarChart />,
       },
     ],

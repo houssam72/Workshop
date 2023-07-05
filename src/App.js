@@ -1,35 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { FiSettings } from "react-icons/fi";
+import React, { useContext, useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { FiSettings,FiUser } from "react-icons/fi";
 import { TooltipComponent } from "@syncfusion/ej2-react-popups";
-import Sondage from "./Pages copy/Sondage/Sondage";
-import { Navbar, Footer, Sidebar, ThemeSettings } from "./components";
 import {
-  Ecommerce,
-  Orders,
-  Calendar,
-  // Employees,
-  Stacked,
-  Pyramid,
-  Customers,
-  Kanban,
-  Line,
-  Area,
-  Bar,
-  Pie,
-  Financial,
-  ColorPicker,
-  ColorMapping,
-  Editor,
-} from "./pages";
-import SignUp from "./components/pages/SignUp";
-import Register from "./components/pages/Register";
+  Navbar,
+  Footer,
+  Sidebar,
+  ThemeSettings,
+  UserProfile,
+} from "./components";
+import { Calendar, Kanban, ColorMapping } from "./pages";
 import Cards from "./components/pages/Cards";
-import Home from "./Pages copy/Home/Home";
 import "./App.css";
-
+import AuthService from "./service/auth-service";
 import { useStateContext } from "./contexts/ContextProvider";
 import MySondage from "./components/pages/mySondage";
+import { UserContext, UserProvider } from "./contexts/UserContext";
+import Home from "./components/Home";
+import Formation from "./components/Formation";
+import AccessDeniedPage from "./components/AccessDeniedPage";
+import ErrorPage from "./components/ErrorPage";
+import Dashboard from "./components/Dashboard";
+import Greeting from "./components/Greeting";
+import Formations from "./components/Formations";
+import Answers from "./components/Answers";
 
 const App = () => {
   const {
@@ -37,12 +31,12 @@ const App = () => {
     setCurrentMode,
     currentMode,
     activeMenu,
+    setActiveProfileMenu,
+    activeProfileMenu,
     currentColor,
     themeSettings,
     setThemeSettings,
-  } = useStateContext();
-  const [state, setState] = useState(0);
-  const [redirectionPage, setRedirection] = useState(1);
+  } = useStateContext(); 
   useEffect(() => {
     const currentThemeColor = localStorage.getItem("colorMode");
     const currentThemeMode = localStorage.getItem("themeMode");
@@ -50,34 +44,22 @@ const App = () => {
       setCurrentColor(currentThemeColor);
       setCurrentMode(currentThemeMode);
     }
-  }, []);
- const test=(x)=>{
-  setRedirection(x)
-    console.log("test",x)
-  }
+  }, []); 
 
   return (
     <>
-      {redirectionPage === 1 ? (
-        <div>
-          <SignUp test={(x)=>test(x)} />
-        </div>
-      ) : redirectionPage === 2 ? (
-        <div>
-          <Register test={(x)=>test(x)}/>
-        </div>
-      ) : (
-        <div className={currentMode === "Dark" ? "dark" : ""}>
-          <BrowserRouter>
+      <div className={currentMode === "Dark" ? "dark" : ""}>
+        <BrowserRouter>
+          <UserProvider>
             <div className="flex relative dark:bg-main-dark-bg">
               <div
                 className="fixed right-4 bottom-4"
                 style={{ zIndex: "1000" }}
               >
-                <TooltipComponent content="Settings" position="Top">
+                <TooltipComponent content="Settings" position="Top"> 
                   <button
                     type="button"
-                    onClick={() => setThemeSettings(true)}
+                    onClick={() => {setThemeSettings(true)}}
                     style={{ background: currentColor, borderRadius: "50%" }}
                     className="text-3xl text-white p-3 hover:drop-shadow-xl hover:bg-light-gray"
                   >
@@ -93,7 +75,7 @@ const App = () => {
                 <div className="w-0 dark:bg-secondary-dark-bg">
                   <Sidebar />
                 </div>
-              )}
+              )} 
               <div
                 className={
                   activeMenu
@@ -108,41 +90,97 @@ const App = () => {
                   {themeSettings && <ThemeSettings />}
 
                   <Routes>
-                    {/* dashboard  */}
-                    {/* <Route path="/sign-up" element={<SignUp />} /> */}
-                    {/* <Route path="/" element={<Ecommerce />} />
-                    <Route path="/ecommerce" element={<Ecommerce />} /> */}
-
-                    {/* pages  */}
-                    <Route path="/Sondage" element={<MySondage />} />
-                    <Route path="/Formation" element={<Cards />} />
-                    {/* <Route path="/customers" element={<Customers />} /> */}
-
-                    {/* apps  */}
-                    <Route path="/Tableau_Agile" element={<Kanban />} />
-                    {/* <Route path="/editor" element={<Editor />} /> */}
-                    <Route path="/Calendrier" element={<Calendar />} />
-                    {/* <Route path="/color-picker" element={<ColorPicker />} /> */}
-
-                    {/* charts  */}
-                    {/* <Route path="/line" element={<Line />} />
-                    <Route path="/area" element={<Area />} />
-                    <Route path="/bar" element={<Bar />} />
-                    <Route path="/pie" element={<Pie />} />
-                    <Route path="/financial" element={<Financial />} /> */}
-                    <Route path="/Graphique" element={<ColorMapping />} />
-                    {/* <Route path="/pyramid" element={<Pyramid />} />
-                    <Route path="/stacked" element={<Stacked />} /> */}
+                    <Route path="/agile" element={<Kanban />} />
+                    <Route path="/calendar" element={<Calendar />} /> 
+                    <Route
+                      path="/"
+                      element={<PublicRoute component={<Home />} />}
+                    />
+                    <Route
+                      path="/formations"
+                      element={<ProtectedRoute component={<Formations />} />}
+                    />
+                    <Route
+                      path="/formation/:id"
+                      element={<ProtectedRoute component={<Formation />} />}
+                    />
+                    <Route
+                      path="/sondage"
+                      element={<ProtectedRoute component={<MySondage />} />}
+                    />
+                    <Route
+                      path="/profile"
+                      element={<ProtectedRoute component={<Greeting/>}/>}
+                    />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute
+                          roles={["ADMIN", "MANAGER"]}
+                          component={<Dashboard />}
+                        />
+                      }
+                    />
+                    <Route
+                      path="/dashboard/companies/:id/edit"
+                      element={
+                        <ProtectedRoute
+                          roles={["ADMIN", "MANAGER"]}
+                          component={<div>EDIT</div>}
+                        />
+                      }
+                    />
+                    <Route
+                      path="/dashboard/companies/:id/stats"
+                      element={
+                        <ProtectedRoute
+                          roles={["ADMIN", "MANAGER"]}
+                          component={<Answers />}
+                        />
+                      }
+                    />
+                    <Route
+                      path="/access-denied"
+                      element={<PublicRoute component={<AccessDeniedPage />} />}
+                    />
+                    <Route
+                      path="*"
+                      element={<PublicRoute component={<ErrorPage />} />}
+                    />
                   </Routes>
                 </div>
                 {/* <Footer /> */}
               </div>
             </div>
-          </BrowserRouter>
-        </div>
-      )}
+          </UserProvider>
+        </BrowserRouter>
+      </div>
     </>
   );
+};
+
+const ProtectedRoute = ({ component, roles }) => {
+  const { user } = useContext(UserContext);
+  if (!AuthService.hasToken()) {
+    return <Navigate to="/" />;
+  }
+
+  if (roles && roles.length > 0 && !roles.includes(user.role)) {
+    console.log(user.role);
+    return <Navigate to="/access-denied" />;
+  }
+
+  return component;
+};
+
+const PublicRoute = ({ component }) => {
+  console.log("oui")
+  if (location.pathname === "/access-denied") {
+    return component;
+  } else if (AuthService.hasToken()) {
+    return <Navigate to="/profile" />;
+  }
+  return component;
 };
 
 export default App;

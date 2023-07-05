@@ -12,27 +12,26 @@ class Accordion extends Component {
     this.setState({ isShow: !this.state.isShow });
   };
   render = () => (
-    <div className="accordion st-content-tab" style={{ marginTop:this.props.i==1 ?'80px' : '0px',background:"#33373e"}} >
-      <div className="blc-title-accordion  ">
+    <div className="accordion st-content-tab">
+      <div onClick={() => this.toggle()} className="blc-title-accordion hover:cursor-pointer">
         <span
-          className="title-accordion clr-black2 b fnt-14"
+          className="title-accordion ph4 clr-black2 b fnt-14"
           style={{ color: "#03c9d7", fontSize: "20px" }}
         >
           {this.props.title}
         </span>
-        <button onClick={() => this.toggle()} className="btn">
+        <div className="relative  w-fit h-full  translate-y-[35%]">
           <span
             className={` ${
-              this.state.isShow ? "ico-caret-up" : "ico-caret-down"
+              this.state.isShow ? "ico-caret-down" : "ico-caret-up"
             }`}
-            style={{ marginRight: "50px" }}
           ></span>
-        </button>
+        </div>
       </div>
-      {this.state.isShow ? (
-        <div className="blc-contents-accordion " style={{background:"#33373e"}} >{this.props.children}</div>
-      ) : (
-        ""
+      {this.state.isShow && (
+        <div className="overflow-x-scroll p-8">
+          {this.props.children}
+        </div>
       )}
     </div>
   );
